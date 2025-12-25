@@ -7,9 +7,10 @@ import com.aleshera.desafio.service.ConsumoAPI;
 import com.aleshera.desafio.service.ConvierteDatos;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Principal {
-    private static final String URL_BASE = "https://gutendex.com/books/";
+        private static final String URL_BASE = "https://gutendex.com/books/";
     private ConsumoAPI consumoAPI = new ConsumoAPI();
     private ConvierteDatos conversor = new ConvierteDatos();
     private Scanner teclado = new Scanner(System.in);
@@ -34,7 +35,7 @@ public class Principal {
                 ELIJA LA OPCIÓN A TRAVÉS DE SU NÚMERO:
                 1 - Buscar libro por título 
                 2 - Listar libros registrados
-                3 - Listar autores registrados (Próximamente)
+                3 - Listar autores registrados 
                 4 - Listar autores vivos en un año (Próximamente)
                 5 - Listar libros por idioma (Próximamente)
                 
@@ -54,7 +55,7 @@ public class Principal {
             switch (opcion) {
                 case 1 -> buscarLibroPorTitulo();
                 case 2 -> listarLibrosRegistrados();
-                case 3 -> System.out.println("Funcionalidad en desarrollo...");
+                case 3 -> listarAutoresRegistrados();
                 case 4 -> System.out.println("Funcionalidad en desarrollo...");
                 case 5 -> System.out.println("Funcionalidad en desarrollo...");
                 case 0 -> System.out.println("Cerrando la aplicación...");
@@ -104,15 +105,46 @@ public class Principal {
         }
     }
 
-    /* MÉTODOS COMENTADOS PARA EVITAR ERRORES DE COMPILACIÓN
-    HASTA QUE LOS REPOSITORIOS ESTÉN LISTOS:
+
 
     private void listarAutoresRegistrados() {
-        List<Autor> autores = autorRepository.findAll();
-        autores.forEach(System.out::println);
+        List<Autor> autores = autorRepositorio.findAll();
+
+        if (autores.isEmpty()) {
+            System.out.println("\n-------------------------------------------");
+            System.out.println("No hay autores registrados en la base de datos.");
+            System.out.println("-------------------------------------------");
+            return;
+
+        }
+
+        System.out.println("\n----------- AUTORES REGISTRADOS -----------");
+
+        autores.forEach(a -> {
+            // Obtenemos los títulos de los libros del autor en una sola línea
+            // Usamos .stream() para transformar la lista de objetos Libro en una lista de Strings (títulos)
+            String librosDelAutor = a.getLibros().stream()
+                    .map(Libro::getTitulo)
+                    .collect(Collectors.joining(", "));
+
+            // Imprimimos con un formato limpio
+            System.out.printf("""
+                Autor: %s
+                Fecha de Nacimiento: %s
+                Fecha de Fallecimiento: %s
+                Libros: [%s]
+                -------------------------------------------
+                """,
+                    a.getNombre(),
+                    a.getFechaDeNacimiento(),
+                    (a.getFechaDeDefuncion() == null ? "N/A" : a.getFechaDeDefuncion()),
+                    librosDelAutor
+            );
+        });
+    }
     }
 
-    private void listarAutoresVivosPorAnio() {
+   /* private void listarAutoresVivosPorAnio() {
         System.out.println("Ingrese el año:");
         var anio = teclado.nextInt();
         // Requiere mtodo personalizado en AutorRepository
@@ -127,5 +159,5 @@ public class Principal {
         // List<Libro> libros = libroRepository.findByIdiomasContains(idioma);
         // libros.forEach(System.out::println);
     }
-    */
-}
+
+}*/
