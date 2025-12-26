@@ -36,8 +36,8 @@ public class Principal {
                 1 - Buscar libro por título 
                 2 - Listar libros registrados
                 3 - Listar autores registrados 
-                4 - Listar autores vivos en un año (Próximamente)
-                5 - Listar libros por idioma (Próximamente)
+                4 - Listar autores vivos en un año 
+                5 - Listar libros por idioma 
                 
                 0 - Salir
                 --------------------------------------------
@@ -56,8 +56,8 @@ public class Principal {
                 case 1 -> buscarLibroPorTitulo();
                 case 2 -> listarLibrosRegistrados();
                 case 3 -> listarAutoresRegistrados();
-                case 4 -> System.out.println("Funcionalidad en desarrollo...");
-                case 5 -> System.out.println("Funcionalidad en desarrollo...");
+                case 4 -> listarAutoresVivosPorAnio();
+                case 5 -> buscarLibrosPorIdioma();
                 case 0 -> System.out.println("Cerrando la aplicación...");
                 default -> System.out.println("Opción inválida");
             }
@@ -141,16 +141,45 @@ public class Principal {
                     librosDelAutor
             );
         });
+    }private void listarAutoresVivosPorAnio() {
+        System.out.println("Ingresa el año para buscar autores que estaban vivos:");
+        var anio = teclado.nextLine();
+
+        List<Autor> autoresVivos = autorRepositorio.autoresVivosEnDeterminadoAnio(anio);
+
+        if (autoresVivos.isEmpty()) {
+            System.out.println("No se encontraron registros de autores vivos en el año " + anio);
+        } else {
+            System.out.println("\n--- AUTORES VIVOS EN EL AÑO " + anio + " ---");
+            autoresVivos.forEach(a -> {
+                System.out.printf("Autor: %s | Nacimiento: %s | Fallecimiento: %s\n",
+                        a.getNombre(), a.getFechaDeNacimiento(),
+                        (a.getFechaDeDefuncion() == null ? "N/A" : a.getFechaDeDefuncion()));
+            });
+        }
+    }private void buscarLibrosPorIdioma() {
+        var menuIdiomas = """
+            Ingrese el idioma para buscar los libros:
+            es - español
+            en - inglés
+            fr - francés
+            pt - portugués
+            """;
+        System.out.println(menuIdiomas);
+        var idiomaElegido = teclado.nextLine().toLowerCase();
+
+        List<Libro> librosPorIdioma = libroRepositorio.findByIdiomasContainsIgnoreCase(idiomaElegido);
+
+        if (librosPorIdioma.isEmpty()) {
+            System.out.println("No se encontraron libros registrados en el idioma seleccionado (" + idiomaElegido + ").");
+        } else {
+            System.out.printf("\n--- LIBROS EN EL IDIOMA [%s] ---\n", idiomaElegido.toUpperCase());
+            librosPorIdioma.forEach(System.out::println);
+        }
     }
     }
 
-   /* private void listarAutoresVivosPorAnio() {
-        System.out.println("Ingrese el año:");
-        var anio = teclado.nextInt();
-        // Requiere mtodo personalizado en AutorRepository
-        // List<Autor> autores = autorRepository.autoresVivosEnDeterminadoAnio(anio);
-        // autores.forEach(System.out::println);
-    }
+   /*
 
     private void buscarLibrosPorIdioma() {
         System.out.println("Ingrese idioma (es, en, fr, pt):");
